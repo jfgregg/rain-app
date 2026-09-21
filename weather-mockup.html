@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Rain — mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EAECEF;
+    --panel:#F6F7F8;
+    --panel-raised:#FFFFFF;
+    --ink:#1B2430;
+    --ink-soft:#5B6572;
+    --ink-faint:#8A939D;
+    --line:#D3D7DC;
+    --rain-1:#CDD1D6;
+    --rain-2:#9AA1A9;
+    --rain-3:#6B7480;
+    --rain-4:#3A4149;
+    --window-fill: rgba(62,108,140,0.13);
+    --window-fill-strong: rgba(62,108,140,0.22);
+    --window-line: rgba(62,108,140,0.45);
+    --storm: #B05A2E;
+    --storm-soft: #F5E3D6;
+    --shower: #3E6C8C;
+    --shower-soft: #DCE7EE;
+    --accent:#C1793C;
+    --accent-soft:#F2E1CB;
+    --accent-ink:#6B4420;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Space Grotesk',sans-serif;
+    display:flex;
+    justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .device{
+    width:390px;
+    min-height:844px;
+    background:var(--bg);
+    position:relative;
+    overflow:hidden;
+    background-image: linear-gradient(var(--line) 1px, transparent 1px);
+    background-size: 100% 84px;
+    background-position: 0 150px;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  svg{ display:block; }
+
+  /* header */
+  .header{ padding:22px 20px 16px; }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.12em;
+    color:var(--ink-faint);
+    text-transform:uppercase;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .place{ font-size:24px; font-weight:600; margin-top:6px; letter-spacing:-0.01em; }
+
+  .now-row{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-top:14px;
+  }
+  .now-icon{ color:var(--ink-soft); flex:0 0 auto; }
+  .now-temp{ font-family:'IBM Plex Mono',monospace; font-size:34px; font-weight:600; letter-spacing:-0.01em; }
+  .now-meta{ display:flex; flex-direction:column; gap:5px; margin-left:2px; }
+  .now-meta-item{ display:flex; align-items:center; gap:6px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; font-size:12.5px; }
+
+  /* section label */
+  .section-label{
+    padding:0 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:20px 0 10px;
+  }
+  .section-label .t{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+  }
+  .section-label .link{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--accent-ink); }
+
+  /* strip */
+  .strip-wrap{ position:relative; padding:0 20px; }
+  .strip-scroll{
+    overflow-x:auto;
+    -ms-overflow-style:none;
+    scrollbar-width:none;
+    padding-bottom:2px;
+  }
+  .strip-scroll::-webkit-scrollbar{display:none;}
+  .strip{
+    position:relative;
+    display:flex;
+    align-items:flex-end;
+    height:172px;
+    min-width:900px;
+    padding-top:10px;
+  }
+  .baseline{ position:absolute; left:0; right:0; bottom:38px; height:1px; background:var(--line); }
+  .cloud{
+    position:absolute;
+    bottom:38px;
+    background:var(--window-fill);
+    border:1.5px solid var(--window-line);
+    border-bottom:none;
+    border-radius:16px 16px 0 0;
+    cursor:pointer;
+    transition:background 0.15s ease, border-color 0.15s ease;
+    z-index:1;
+  }
+  .cloud.tight{ background:var(--storm-soft); border-color:rgba(176,90,46,0.5); }
+  .cloud.active{ background:var(--window-fill-strong); border-width:2px; }
+  .cloud.tight.active{ background:#EBCBAE; }
+  .cloud-tag{
+    position:absolute;
+    top:7px; left:8px;
+    display:flex; align-items:center; gap:4px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px; font-weight:600;
+    color:var(--shower);
+  }
+  .cloud.tight .cloud-tag{ color:var(--storm); }
+
+  .hour-col{
+    position:relative;
+    width:44px; flex:0 0 44px;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+    height:172px;
+    z-index:2;
+  }
+  .pct-label{ font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; color:var(--ink-soft); margin-bottom:6px; }
+  .bar{ width:16px; border-radius:4px 4px 2px 2px; background:var(--rain-2); }
+  .hour-label{ position:absolute; bottom:8px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-faint); }
+  .hour-col.selected .hour-label{ color:var(--accent-ink); font-weight:600; }
+
+  /* detail panel (tap a cloud) */
+  .detail-panel{
+    margin:14px 20px 0;
+    padding:13px 15px;
+    border-radius:14px;
+    background:var(--panel-raised);
+    border:1px solid var(--line);
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+  }
+  .detail-panel .icon-wrap{
+    width:34px; height:34px; border-radius:10px;
+    background:var(--shower-soft); color:var(--shower);
+    display:flex; align-items:center; justify-content:center;
+    flex:0 0 auto;
+  }
+  .detail-panel.storm .icon-wrap{ background:var(--storm-soft); color:var(--storm); }
+  .detail-title{ font-size:13.5px; font-weight:600; }
+  .detail-text{ font-size:12px; color:var(--ink-soft); margin-top:3px; line-height:1.45; }
+  .detail-hint{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-faint); }
+
+  /* legend */
+  .legend{ display:flex; gap:13px; padding:14px 20px 4px; flex-wrap:wrap; align-items:center; }
+  .legend-item{ display:flex; align-items:center; gap:5px; font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-faint); }
+  .swatch{ width:10px;height:10px;border-radius:2.5px; }
+
+  /* window card */
+  .window-card{
+    margin:22px 16px 0;
+    background:var(--panel-raised);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px 18px 16px;
+  }
+  .chips{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .chip{
+    font-family:'IBM Plex Mono',monospace; font-size:12px;
+    padding:7px 13px; border-radius:999px; border:1px solid var(--line);
+    color:var(--ink-soft); background:var(--panel);
+  }
+  .chip.active{ background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+  .chip.add{ color:var(--ink-faint); border-style:dashed; }
+
+  .range-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
+  .range-time{ font-family:'IBM Plex Mono',monospace; font-size:19px; font-weight:600; }
+  .range-time span{ color:var(--ink-faint); font-weight:400; margin:0 4px;}
+  .drag-hint{ font-size:10.5px; color:var(--ink-faint); font-family:'IBM Plex Mono',monospace; }
+
+  .slider-track{ position:relative; height:6px; background:var(--line); border-radius:999px; margin:18px 4px 22px; }
+  .slider-fill{ position:absolute; height:6px; background:var(--accent-soft); border-radius:999px; left:29%; width:25%; }
+  .handle{
+    position:absolute; top:50%; width:20px;height:20px;
+    background:#fff; border:2.5px solid var(--accent); border-radius:50%;
+    transform:translate(-50%,-50%); box-shadow:0 1px 3px rgba(0,0,0,0.15);
+  }
+  .handle.left{ left:29%; }
+  .handle.right{ left:54%; }
+
+  .divider{ height:1px; background:var(--line); margin:4px 0 16px; }
+
+  .result-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .result-pct{ font-family:'IBM Plex Mono',monospace; font-size:34px; font-weight:600; letter-spacing:-0.01em; }
+  .result-sub{ font-size:12px; color:var(--ink-soft); margin-top:2px; max-width:200px; line-height:1.4; }
+  .icon-badge{
+    width:42px; height:42px; border-radius:12px;
+    background:var(--shower-soft); color:var(--shower);
+    display:flex; align-items:center; justify-content:center;
+    flex:0 0 auto;
+  }
+
+  .intensity-row{ display:flex; align-items:center; gap:8px; margin-top:14px; }
+  .intensity-row .track{ flex:1; display:flex; gap:3px; }
+  .intensity-row .seg{ flex:1; height:5px; border-radius:3px; background:var(--line); }
+  .intensity-row .seg.on{ background:var(--rain-3); }
+  .intensity-row .icon{ color:var(--ink-soft); flex:0 0 auto; }
+
+  .footnote{
+    text-align:center; font-family:'IBM Plex Mono',monospace; font-size:10px;
+    color:var(--ink-faint); padding:20px 20px 30px; line-height:1.5;
+  }
+</style>
+</head>
+<body>
+<div class="device">
+
+  <div class="header">
+    <div class="eyebrow"><span>THU 20 AUG · MOBILE</span><span>⋯</span></div>
+    <div class="place">Home</div>
+    <div class="now-row">
+      <div class="now-icon">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M6 16.5a4 4 0 010-8 5.5 5.5 0 0110.8 1.6A4.2 4.2 0 0117 18H6.6A3.6 3.6 0 016 16.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="now-temp">14°</div>
+      <div class="now-meta">
+        <div class="now-meta-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 8h11a2.5 2.5 0 10-2.2-3.7M3 13h15a2.5 2.5 0 11-2.2 3.7M3 18h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          12 mph
+        </div>
+        <div class="now-meta-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M7 15a4 4 0 010-8 5.5 5.5 0 0110.6 1.8A4 4 0 0117 17H7a4 4 0 010-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 19l-1 2M15 19l-1 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          18%
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label"><span class="t">Next 12 hours</span><span class="link">Week →</span></div>
+
+  <div class="strip-wrap">
+    <div class="strip-scroll">
+      <div class="strip" id="strip">
+        <div class="baseline"></div>
+
+        <!-- shower cloud: window-max 82%, well above its own hourly bars -->
+        <div class="cloud" style="left:88px; width:220px; height:79px;"
+             onclick="showDetail(this,'shower')">
+          <span class="cloud-tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M7 15a4 4 0 010-8 5.5 5.5 0 0110.6 1.8A4 4 0 0117 17H7a4 4 0 010-2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 19l-1 2M15 19l-1 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            82%
+          </span>
+        </div>
+
+        <!-- storm cloud: window-max 38%, close to its own hourly bars -->
+        <div class="cloud tight" style="left:616px; width:88px; height:36px;"
+             onclick="showDetail(this,'storm')">
+          <span class="cloud-tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M7 13a4 4 0 010-8 5.5 5.5 0 0110.6 1.8A4 4 0 0117 15H7a4 4 0 010-2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M13 14l-3 5h3l-2 4 5-6h-3l2-3z" fill="currentColor"/></svg>
+            38%
+          </span>
+        </div>
+
+        <div class="hour-col"><div class="pct-label">8%</div><div class="bar" style="height:8px;background:var(--rain-1);"></div><div class="hour-label">6a</div></div>
+        <div class="hour-col"><div class="pct-label">22%</div><div class="bar" style="height:21px;background:var(--rain-1);"></div><div class="hour-label">7</div></div>
+        <div class="hour-col"><div class="pct-label">28%</div><div class="bar" style="height:27px;background:var(--rain-2);"></div><div class="hour-label">8</div></div>
+        <div class="hour-col"><div class="pct-label">31%</div><div class="bar" style="height:30px;background:var(--rain-2);"></div><div class="hour-label">9</div></div>
+        <div class="hour-col"><div class="pct-label">24%</div><div class="bar" style="height:23px;background:var(--rain-1);"></div><div class="hour-label">10</div></div>
+        <div class="hour-col"><div class="pct-label">14%</div><div class="bar" style="height:13px;background:var(--rain-1);"></div><div class="hour-label">11</div></div>
+        <div class="hour-col"><div class="pct-label">6%</div><div class="bar" style="height:6px;background:var(--rain-1);"></div><div class="hour-label">12p</div></div>
+        <div class="hour-col"><div class="pct-label">4%</div><div class="bar" style="height:4px;background:var(--rain-1);"></div><div class="hour-label">1</div></div>
+        <div class="hour-col"><div class="pct-label">9%</div><div class="bar" style="height:9px;background:var(--rain-1);"></div><div class="hour-label">2</div></div>
+        <div class="hour-col selected"><div class="pct-label" style="color:var(--accent-ink);font-weight:700;">35%</div><div class="bar" style="height:34px;background:var(--rain-4);"></div><div class="hour-label">3</div></div>
+        <div class="hour-col"><div class="pct-label">33%</div><div class="bar" style="height:32px;background:var(--rain-4);"></div><div class="hour-label">4</div></div>
+        <div class="hour-col"><div class="pct-label">11%</div><div class="bar" style="height:11px;background:var(--rain-2);"></div><div class="hour-label">5</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-panel" id="detailPanel">
+    <div class="icon-wrap" id="detailIcon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 8h11a2.5 2.5 0 10-2.2-3.7M3 13h15a2.5 2.5 0 11-2.2 3.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </div>
+    <div>
+      <div class="detail-hint" id="detailHint">Tap a shaded window on the strip above for details</div>
+      <div class="detail-title" id="detailTitle" style="display:none;"></div>
+      <div class="detail-text" id="detailText" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="swatch" style="background:var(--rain-1);"></span> light</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--rain-2);"></span> moderate</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--rain-3);"></span> heavy</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--rain-4);"></span> intense</div>
+    <div class="legend-item" style="margin-left:auto;">bar height = shading height = same % scale</div>
+  </div>
+
+  <div class="window-card">
+    <div class="chips">
+      <div class="chip active">Commute</div>
+      <div class="chip">Weekend</div>
+      <div class="chip add">+ New window</div>
+    </div>
+
+    <div class="range-row">
+      <div class="range-time">7:00<span>–</span>8:00</div>
+      <div class="drag-hint">drag to adjust →</div>
+    </div>
+    <div class="slider-track">
+      <div class="slider-fill"></div>
+      <div class="handle left"></div>
+      <div class="handle right"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="result-row">
+      <div>
+        <div class="result-pct">82%</div>
+        <div class="result-sub">most likely 8:00–8:40</div>
+      </div>
+      <div class="icon-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7 15a4 4 0 010-8 5.5 5.5 0 0110.6 1.8A4 4 0 0117 17H7a4 4 0 010-2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 19l-1 2M15 19l-1 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+
+    <div class="intensity-row">
+      <div class="icon">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 19l-1 2M15 19l-1 2M12 19l-1 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M7 15a4 4 0 010-8 5.5 5.5 0 0110.6 1.8A4 4 0 0117 17H7a4 4 0 010-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="track">
+        <div class="seg on"></div><div class="seg on"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footnote">mockup · static data · not connected to a forecast yet</div>
+
+</div>
+
+<script>
+  const data = {
+    shower: {
+      title: "Shower — timing uncertain",
+      text: "Rain is likely at some point in this window (82% peak). Individual hours only read 22–31%, but that's because models disagree on exactly which hour it lands, not on whether it happens.",
+      time: "most likely 8:00–9:30",
+      cls: ""
+    },
+    storm: {
+      title: "Storm — may or may not develop",
+      text: "This window's peak (38%) is close to its individual hourly values. If a storm forms, it should stay roughly in this window — the real uncertainty is whether it forms at all.",
+      time: "if it forms, 3:00–4:00",
+      cls: "storm"
+    }
+  };
+
+  const iconSvg = {
+    shower: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 15a4 4 0 010-8 5.5 5.5 0 0110.6 1.8A4 4 0 0117 17H7a4 4 0 010-2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 19l-1 2M15 19l-1 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
+    storm: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 13a4 4 0 010-8 5.5 5.5 0 0110.6 1.8A4 4 0 0117 15H7a4 4 0 010-2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M13 14l-3 5h3l-2 4 5-6h-3l2-3z" fill="currentColor"/></svg>'
+  };
+
+  function showDetail(el, key){
+    document.querySelectorAll('.cloud').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+
+    const d = data[key];
+    const panel = document.getElementById('detailPanel');
+    panel.className = 'detail-panel' + (d.cls ? ' ' + d.cls : '');
+    document.getElementById('detailIcon').innerHTML = iconSvg[key];
+    document.getElementById('detailHint').style.display = 'none';
+    const t = document.getElementById('detailTitle');
+    const x = document.getElementById('detailText');
+    t.style.display = 'block';
+    x.style.display = 'block';
+    t.textContent = d.title;
+    x.textContent = d.text + '  ·  ' + d.time;
+  }
+</script>
+</body>
+</html>
