@@ -10,6 +10,7 @@ Run with:
     uvicorn api:app --reload --port 8000
 """
 
+import threading
 import time
 from dataclasses import asdict
 
@@ -20,6 +21,12 @@ from fetch_forecast import (
     build_hourly_forecast,
     get_current_conditions,
 )
+
+# Locations to pre-warm on startup. Add any saved locations here so the
+# cache is hot before the first browser request arrives.
+WARMUP_LOCATIONS = [
+    (40.7128, -74.0060),  # Home (NYC)
+]
 
 # Simple in-process cache: keyed by (lat, lon), holds (result, timestamp).
 # Forecast data is refreshed at most once per hour — GEFS runs every 6 hrs
@@ -40,7 +47,24 @@ def _cached_forecast(lat: float, lon: float) -> list:
     _forecast_cache[key] = (hours, time.time())
     return hours
 
+
+def _warmup():
+    for lat, lon in WARMUP_LOCATIONS:
+        try:
+            print(f"Warming cache for ({lat}, {lon})…")
+            _cached_forecast(lat, lon)
+            print(f"Cache warm for ({lat}, {lon})")
+        except Exception as e:
+            print(f"Warmup failed for ({lat}, {lon}): {e}")
+
 app = FastAPI(title="Rain API", version="0.1.0")
+
+# Pre-warm the forecast cache in a background thread on startup so the
+# first browser request returns instantly rather than timing out.
+@app.on_event("startup")
+async def startup_warmup():
+    threading.Thread(target=_warmup, daemon=True).start()
+
 
 # Allow the local frontend (file:// or localhost dev server) to call this
 app.add_middleware(
